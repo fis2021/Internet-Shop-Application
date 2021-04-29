@@ -42,10 +42,15 @@ function validateOtherName(otherName, length = 50) {
     return typeof otherName === "string" && re.test(otherName) && otherName.length <= length
 }
 
-module.exports = {
-    validatePassword : validatePassword,
-    validateEmail : validateEmail,
-    validateName : validateName,
-    validateOtherName : validateOtherName
+function validatePhone(phone) {
+    const re = /^[0-9]{1,12}$/
+    return typeof phone === "string" && re.test(phone)
 }
 
+module.exports = {
+    validatePassword,
+    validateEmail,
+    validateName,
+    validateOtherName,
+    validatePhone
+}
