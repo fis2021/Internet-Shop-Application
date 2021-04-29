@@ -24,11 +24,21 @@ const Tables = {
 
 const pool = new Pool(credentials)
 
-async function query(stmt, params){
+
+function CheckConnection() {
     pool.connect((err) => {
-        if(err) console.err("New connection couldn't be established with database", err.stack)
+        if(err) console.error("New connection couldn't be established with database", err.stack)
     })
-    return await pool.query(stmt, params)
+}
+CheckConnection() // Establish a test connection to database
+
+
+async function query(stmt, params){
+    try {
+        return await pool.query(stmt, params)
+    } catch (err) {
+        console.error("Query execution error. ", err.stack)
+    }
 }
 
 module.exports = {
