@@ -1,5 +1,5 @@
-const validator= require('./security').validator
+const {hash, base64, validator} = require('./security')
 
 module.exports = {
-    validator : validator
+    security : {hash, base64, validator}
 }
