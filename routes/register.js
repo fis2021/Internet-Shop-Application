@@ -43,7 +43,8 @@ router.put('/', async function(req, res, next) {
     }
 
     queryParams['email'] = utils.security.validator.validateEmail(user.email) ? user.email : undefined
-    queryParams['password'] = utils.security.validator.validatePassword(utils.security.base64.decodeBase64(user.password)) ? user.password : undefined
+    queryParams['password'] = utils.security.base64.decodeBase64(user.password)
+    queryParams['password'] = utils.security.validator.validatePassword(queryParams['password']) ? queryParams['password'] : undefined
 
     //If any of provided fields are invalid return error response, otherwise register new user
     if(!queryParams.every(e => e)){
