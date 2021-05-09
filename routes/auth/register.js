@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const database = require('./../database')
-const templates = require('../templates').register
-const utils = require('../utils')
+const database = require('../../database')
+const templates = require('../../templates').register
+const utils = require('../../utils')
 const uuid = require('uuid')
 
 router.put('/', async function(req, res, next) {
