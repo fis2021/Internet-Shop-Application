@@ -13,6 +13,12 @@ CREATE  TABLE "internet-shop-application".sellers (
 	seller_register_date timestamptz  NOT NULL
  );
 
+ALTER TABLE "internet-shop-application".sellers ADD COLUMN seller_authentication_token uuid;
+ALTER TABLE "internet-shop-application".sellers ADD COLUMN seller_token_creation_date timestamptz;
+ALTER TABLE "internet-shop-application".sellers ADD COLUMN seller_token_expiration_date timestamptz;
+ALTER TABLE "internet-shop-application".sellers ADD COLUMN seller_token_in_use boolean DEFAULT false;
+
+
 --Table for registration customers related data
 CREATE  TABLE "internet-shop-application".customers (
 	customer_idx         BIGSERIAL PRIMARY KEY,
@@ -23,3 +29,9 @@ CREATE  TABLE "internet-shop-application".customers (
 	customer_password    char(60)  NOT NULL ,
 	customer_register_date timestamptz NOT NULL
 );
+
+ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_authentication_token uuid;
+ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_token_creation_date timestamptz;
+ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_token_expiration_date timestamptz;
+ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_token_in_use boolean DEFAULT false;
+
