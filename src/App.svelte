@@ -1,32 +1,16 @@
 <script>
-	export let name;
-	let variabila = "salut";
-
+    import Router from 'svelte-spa-router'
+    import customerregister from './customerregister.svelte';
+    import navregister from './navregister.svelte'
+    import sellerregister from './sellerregister.svelte';
+    import signin from './signin.svelte'
 </script>
 
-<main>
-	<h1>Hello {variabila}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
-</main>
-
-<style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
-	}
-
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
-</style>
+<div class="container flex flex-col justify-center items-center w-screen h-screen mx-auto">
+    <Router routes={{
+        '/': signin,
+        '/#/navregister':navregister,
+        '/#/customerregister':customerregister,
+        '/#/sellerregister':sellerregister
+    }} />
+</div>
