@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
 
-const template = require('../templates').login
-const utils = require('../utils')
-const database = require('../database')
+const template = require('../../templates').login
+const utils = require('../../utils')
+const database = require('../../database')
 const uuid = require('uuid')
 
 const tokenExpirationTime = 60 * 60 * 24; //One day equivalent in seconds

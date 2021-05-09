@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const templates = require('../templates').logout
-const utils = require('../utils')
+const templates = require('../../templates').logout
+const utils = require('../../utils')
 const uuid = require('uuid')
-const database = require('../database')
+const database = require('../../database')
 
 router.put('/', async function(req, res, next) {
     try {
