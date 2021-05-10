@@ -35,3 +35,17 @@ ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_token_crea
 ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_token_expiration_date timestamptz;
 ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_token_in_use boolean DEFAULT false;
 
+
+--Table for products
+CREATE  TABLE "internet-shop-application".products (
+	product_idx          BIGSERIAL PRIMARY KEY,
+	product_unique_register_id uuid  NOT NULL ,
+	product_name         varchar(100)  NOT NULL ,
+	product_price        double precision  NOT NULL ,
+	product_quantity     integer  NOT NULL default 0,
+	product_company_owner_uuid uuid  NOT NULL ,
+	product_description  text  NOT NULL ,
+	product_image_location path ,
+	product_register_date date DEFAULT current_date NOT NULL ,
+	product_status       char(1)  NOT NULL
+ );

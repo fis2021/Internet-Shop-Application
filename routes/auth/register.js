@@ -19,6 +19,7 @@ router.put('/', async function(req, res, next) {
         isValid(requestBody)
     } catch(e) {
         res.status(400).json({"error_message" : "Wrong request format."})
+        return
     }
 
     const requestBody = JSON.parse(JSON.stringify(req.body))
@@ -77,8 +78,8 @@ router.put('/', async function(req, res, next) {
                         'NOW()']
                     const dbResponseCustomer = await database.query(customerStmt, customerValues)
 
-                    if(dbResponseCustomer.rows === Array.empty){
-                        res.json({"error_message" : "Internal server error"}).status(500)
+                    if(dbResponseCustomer.rows.length === 0){
+                        res.status(500).json({"error_message" : "Internal server error"})
                     } else {
                         res.status(201).end()
                     }
@@ -104,8 +105,8 @@ router.put('/', async function(req, res, next) {
                         'NOW()']
                     const dbResponseSeller = await database.query(sellerStmt, sellerValues)
 
-                    if(dbResponseSeller.rows === Array.empty){
-                        res.json({"error_message" : "Internal server error"}).status(500)
+                    if(dbResponseSeller.rows.length === 0){
+                        res.status(500).json({"error_message" : "Internal server error"})
                     } else {
                         res.status(201).end()
                     }
