@@ -96,7 +96,8 @@ router.post('/', async function(req, res, next) {
                             WHERE seller_company_email = $2 RETURNING seller_token_expiration_date;`
 
                     const expirationTimeFromDB = await database.query(updateStatus, [accessToken, userCredentials.email])
-                    res.status(201).json(tokenObj(userCredentials.userType, accessToken, expirationTimeFromDB.rows[0]['customer_token_expiration_date']))
+                    const expirationTime = userCredentials.userType === "customer" ? expirationTimeFromDB.rows[0]['customer_token_expiration_date'] : expirationTimeFromDB.rows[0]['seller_token_expiration_date']
+                    res.status(201).json(tokenObj(userCredentials.userType, accessToken, expirationTime))
                 }
             } else {
                 res.status(400).json({"error_message" : "User is already logged in."})
