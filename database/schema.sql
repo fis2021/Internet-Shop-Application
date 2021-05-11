@@ -46,6 +46,6 @@ CREATE  TABLE "internet-shop-application".products (
 	product_company_owner_uuid uuid  NOT NULL ,
 	product_description  text  NOT NULL ,
 	product_image_location path ,
-	product_register_date date DEFAULT current_date NOT NULL ,
+	product_register_date timestamptz NOT NULL ,
 	product_status       char(1)  NOT NULL
  );
