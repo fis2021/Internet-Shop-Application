@@ -5,6 +5,7 @@ const add = {
         "name" : "name",
         "price" : 0,
         "quantity" : 0,
+        "category" : "category",
         "description" : "text",
         "image" : "base 64 string",
     }
@@ -18,6 +19,7 @@ const edit = {
         "name" : "new name",
         "price" : 0,
         "quantity" : 0,
+        "category" : "category",
         "description" : "new text",
         "image" : "base 64 string",
     }

@@ -44,6 +44,7 @@ router.get('/view-all/:uuidSessionTag', async function(req, res, next) {
     const getSellerProductsStmt = `SELECT product_name,
                                        product_price,
                                        product_quantity,
+                                       product_category,
                                        product_description,
                                        product_image_data,
                                        product_unique_register_id
@@ -54,9 +55,11 @@ router.get('/view-all/:uuidSessionTag', async function(req, res, next) {
 
     const productsList = productsOfSeller.rows.map((e) => {
         return {
+            "id" : e.product_unique_register_id,
             "name" : e.product_name,
             "price" : e.product_price,
             "quantity" : e.product_quantity,
+            "category" : e.product_category,
             "description" : e.product_description,
             "image" : e.product_image_data.toString('base64'),
             "id" : e.product_unique_register_id
@@ -122,16 +125,18 @@ router.post('/changes', async function(req, res, next) {
                                  product_price,
                                  product_quantity,
                                  product_company_owner_uuid,
+                                 product_category,
                                  product_description,
                                  product_image_data,
                                  product_register_date,
-                                 product_status)  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING true;`
+                                 product_status)  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING true;`
             const addParams = [
                 uuid.v4(),
                 requestBody.product.name,
-                requestBody.product.price,
-                requestBody.product.quantity,
+                requestBody.product.price <= 0 ? 1 : requestBody.product.price,
+                requestBody.product.quantity <= 0 ? 1 : requestBody.product.quantity,
                 sellerUUID,
+                requestBody.product.category,
                 requestBody.product.description,
                 requestBody.product.image,
                 'NOW()',
@@ -141,7 +146,7 @@ router.post('/changes', async function(req, res, next) {
             if(addResponse.rows.length > 0){
                 res.status(201).end()
             } else {
-                res.status(501).end()
+                res.status(500).end()
             }
 
             break
@@ -151,24 +156,26 @@ router.post('/changes', async function(req, res, next) {
                                   product_name = $1,
                                   product_price = $2,
                                   product_quantity = $3,
+                                  product_category = $8,
                                   product_description = $4,
                                   product_image_data = $5
                               WHERE (product_unique_register_id = $6 
                               AND product_company_owner_uuid = $7) RETURNING true;`
             const editParams = [
                 requestBody.product.name,
-                requestBody.product.price,
-                requestBody.product.quantity,
+                requestBody.product.price <= 0 ? 1 : requestBody.product.price,
+                requestBody.product.quantity <= 0 ? 1 : requestBody.product.quantity,
                 requestBody.product.description,
                 requestBody.product.image,
                 productUUID,
-                sellerUUID
+                sellerUUID,
+                requestBody.product.category
             ]
             const editResponse = await database.query(editStmt, editParams)
             if(editResponse.rows.length > 0){
                 res.status(201).end()
             } else {
-                res.status(501).end()
+                res.status(400).json({"error_message" : "Product id doesn't exist"})
             }
             break
 
@@ -181,7 +188,7 @@ router.post('/changes', async function(req, res, next) {
             if(removeResponse.rows.length > 0){
                 res.status(201).end()
             } else {
-                res.status(400).end()
+                res.status(400).json({"error_message" : "Product id doesn't exist"})
             }
             break
 
