@@ -50,3 +50,5 @@ CREATE  TABLE "internet-shop-application".products (
 	product_register_date date DEFAULT current_date NOT NULL ,
 	product_status       char(1)  NOT NULL
  );
+
+ALTER TABLE "internet-shop-application".products ADD COLUMN product_category varchar(50) NOT NULL DEFAULT '*';
