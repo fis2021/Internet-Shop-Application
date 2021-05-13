@@ -25,12 +25,25 @@ router.get('/view-all/:uuidTag', async function(req, res, next) {
         return
     }
 
+    const currentDate = new Date()
+    if(sellerExits.rows[0]['seller_token_expiration_date'] < currentDate){
+        const clearTokenStmt = `UPDATE ${database.Tables.sellers} SET
+                                    seller_authentication_token = null,
+                                    seller_token_in_use = false,
+                                    seller_token_creation_date = null,
+                                    seller_token_expiration_date = null
+                                WHERE seller_authentication_token = $1;`
+        await database.query(clearTokenStmt, [sellerTag])
+        res.status(400).json({"error_message " : "Session token expired. Please log in again."})
+        return
+    }
+
     const sellerRegistrationUUID = sellerExits.rows[0]['seller_unique_register_id']
     const getSellerProductsStmt = `SELECT product_name,
                                        product_price,
                                        product_quantity,
                                        product_description,
-                                       product_image_location,
+                                       product_image_data,
                                        product_unique_register_id
                                     FROM ${database.Tables.products}
                                     WHERE product_company_owner_uuid = $1;`
@@ -43,7 +56,7 @@ router.get('/view-all/:uuidTag', async function(req, res, next) {
             "price" : e.product_price,
             "quantity" : e.product_quantity,
             "description" : e.product_description,
-            "imageURL" : e.product_image_location,
+            "image" : e.product_image_data.toString('base64'),
             "id" : e.product_unique_register_id
         }
     })
