@@ -6,6 +6,7 @@ const add = {
         "price" : 0,
         "quantity" : 0,
         "description" : "text",
+        "image" : "base 64 string",
     }
 }
 
@@ -18,6 +19,7 @@ const edit = {
         "price" : 0,
         "quantity" : 0,
         "description" : "new text",
+        "image" : "base 64 string",
     }
 }
 
