@@ -9,8 +9,8 @@ const utils = require('../../utils')
 /**
  * Display all seller products route, based on uuid (session token)
  */
-router.get('/view-all/:uuidTag', async function(req, res, next) {
-    const sellerTag = req.params['uuidTag']
+router.get('/view-all/:uuidSessionTag', async function(req, res, next) {
+    const sellerTag = req.params['uuidSessionTag']
     if(uuid.validate(sellerTag) === false) {
         res.status(400).json({"error_message " : "Invalid parameter"})
         return
@@ -24,6 +24,19 @@ router.get('/view-all/:uuidTag', async function(req, res, next) {
     const sellerExits = await database.query(getSellerInfoStmt, [sellerTag])
     if(sellerExits.rows.length === 0){
         res.status(400).json({"error_message " : "Token doesn't exist"})
+        return
+    }
+
+    const currentDate = new Date()
+    if(sellerExits.rows[0]['seller_token_expiration_date'] < currentDate){
+        const clearTokenStmt = `UPDATE ${database.Tables.sellers} SET
+                                    seller_authentication_token = null,
+                                    seller_token_in_use = false,
+                                    seller_token_creation_date = null,
+                                    seller_token_expiration_date = null
+                                WHERE seller_authentication_token = $1;`
+        await database.query(clearTokenStmt, [sellerTag])
+        res.status(400).json({"error_message " : "Session token expired. Please log in again."})
         return
     }
 
@@ -48,7 +61,8 @@ router.get('/view-all/:uuidTag', async function(req, res, next) {
             "quantity" : e.product_quantity,
             "category" : e.product_category,
             "description" : e.product_description,
-            "imageURL" : e.product_image_data
+            "image" : e.product_image_data.toString('base64'),
+            "id" : e.product_unique_register_id
         }
     })
 
