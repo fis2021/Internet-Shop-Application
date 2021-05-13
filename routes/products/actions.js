@@ -25,19 +25,6 @@ router.get('/view-all/:uuidTag', async function(req, res, next) {
         return
     }
 
-    const currentDate = new Date()
-    if(sellerExits.rows[0]['seller_token_expiration_date'] < currentDate){
-        const clearTokenStmt = `UPDATE ${database.Tables.sellers} SET
-                                    seller_authentication_token = null,
-                                    seller_token_in_use = false,
-                                    seller_token_creation_date = null,
-                                    seller_token_expiration_date = null
-                                WHERE seller_authentication_token = $1;`
-        await database.query(clearTokenStmt, [sellerTag])
-        res.status(400).json({"error_message " : "Session token expired. Please log in again."})
-        return
-    }
-
     const sellerRegistrationUUID = sellerExits.rows[0]['seller_unique_register_id']
     const getSellerProductsStmt = `SELECT product_name,
                                        product_price,
