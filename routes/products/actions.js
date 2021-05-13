@@ -62,7 +62,6 @@ router.get('/view-all/:uuidSessionTag', async function(req, res, next) {
             "category" : e.product_category,
             "description" : e.product_description,
             "image" : e.product_image_data.toString('base64'),
-            "id" : e.product_unique_register_id
         }
     })
 
