@@ -34,6 +34,7 @@ ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_authentica
 ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_token_creation_date timestamptz;
 ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_token_expiration_date timestamptz;
 ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_token_in_use boolean DEFAULT false;
+ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_funds real DEFAULT .0 NOT NULL;
 
 
 --Table for products
