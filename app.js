@@ -9,6 +9,7 @@ const registerRouter = require('./routes/auth/register')
 const loginRouter = require('./routes/auth/login')
 const logoutRouter = require('./routes/auth/logout')
 const productActionRouter = require('./routes/products/actions')
+const customerFundsRouter = require('./routes/customer/funds')
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use('/api/auth/register', registerRouter)
 app.use('/api/auth/login', loginRouter)
 app.use('/api/auth/logout', logoutRouter)
 app.use('/api/products/actions', productActionRouter)
+app.use('/api/customer/funds', customerFundsRouter)
 
 
 // catch 404 and forward to error handler
