@@ -12,7 +12,6 @@ router.get('/', async function(req, res, next) {
     optionsFlag['product_unique_register_id'] = !!options.id
     optionsFlag['limit'] = options.limit === undefined ? "All" : options.limit
     optionsFlag['company'] = options.company === undefined ? false : options.company
-    optionsFlag['order'] = options.order === undefined ? "ASC" : "DES"
 
     const formatToArray = (entity, field_name, type = String) => {
         if(entity === undefined) return ""
@@ -40,7 +39,7 @@ router.get('/', async function(req, res, next) {
                         ${optionsFlag['product_price'] ? " AND " : " "}
                         ${optionsFlag['product_unique_register_id'] ? formatToArray(options.id, "product_unique_register_id") : " "}
                         ${optionsFlag['company'] ? formatToArray(options.company, "seller_company_name") : " "}
-                        ${optionsFlag['limit'] === "All" ? "" : "LIMIT ".concat(optionsFlag['limit'])};`
+                        ${optionsFlag['limit'] === "All" ? "" : "LIMIT ".concat(Number(options.limit).toString())};`
     
     try {
         const dbResponse = await database.query(selectStmt)
