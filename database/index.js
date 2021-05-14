@@ -20,7 +20,8 @@ const SchemaName = '"internet-shop-application"'
 const Tables = {
     customers : SchemaName.concat(".", "customers"),
     sellers :   SchemaName.concat(".", "sellers"),
-    products :  SchemaName.concat(".", "products")
+    products :  SchemaName.concat(".", "products"),
+    carts :     SchemaName.concat(".", "carts")
 }
 
 const pool = new Pool(credentials)
