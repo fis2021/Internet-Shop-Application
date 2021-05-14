@@ -52,3 +52,10 @@ CREATE  TABLE "internet-shop-application".products (
  );
 
 ALTER TABLE "internet-shop-application".products ADD COLUMN product_category varchar(50) NOT NULL DEFAULT '*';
+
+CREATE  TABLE "internet-shop-application".carts (
+	cart_idx             BIGSERIAL PRIMARY KEY ,
+	cart_owner_uuid      uuid  NOT NULL ,
+	cart_content         bigint[] ,
+	cart_total_cost      double precision DEFAULT 0.0 NOT NULL
+ );
