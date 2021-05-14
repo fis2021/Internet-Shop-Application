@@ -20,6 +20,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.use(function(req, res, next) {
+  const corsOrigin = 'http://localhost:5000'
+  res.setHeader('Access-Control-Allow-Origin', corsOrigin)
+  res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE")
+  res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
+  res.set('Access-Control-Allow-Credentials', 'true')
+  next()
+})
+
 // Routes
 app.use('/', indexRouter);
 app.use('/api/auth/register', registerRouter)
