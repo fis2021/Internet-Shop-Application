@@ -69,6 +69,7 @@ CREATE  TABLE "internet-shop-application".carts (
 -- table to register orders
 CREATE  TABLE "internet-shop-application".orders (
 	order_idx             BIGSERIAL PRIMARY KEY,
+	order_uuid            uuid NOT NULL,
 	order_customer_id     uuid NOT NULL,
 	order_content         text[]  NOT NULL DEFAULT '{}',
 	order_total_cost      double precision  NOT NULL ,
