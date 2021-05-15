@@ -21,7 +21,8 @@ const Tables = {
     customers : SchemaName.concat(".", "customers"),
     sellers :   SchemaName.concat(".", "sellers"),
     products :  SchemaName.concat(".", "products"),
-    carts :     SchemaName.concat(".", "carts")
+    carts :     SchemaName.concat(".", "carts"),
+    orders :    SchemaName.concat(".", "orders")
 }
 
 const pool = new Pool(credentials)
