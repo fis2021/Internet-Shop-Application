@@ -31,6 +31,10 @@ router.post('/changes', async function(req, res, next) {
 
     const userRegistrationUUID = await database.query(`SELECT customer_unique_register_id, customer_token_expiration_date FROM ${database.Tables.customers} 
                              WHERE customer_authentication_token = $1 AND customer_token_in_use = TRUE ;`, [sessionToken])
+    if(userRegistrationUUID.rows.length <= 0){
+        res.status(400).end()
+        return
+    }
 
     const currentDate = new Date()
     const isValidSessionToken = userRegistrationUUID.rows[0]['customer_token_expiration_date']
@@ -39,7 +43,6 @@ router.post('/changes', async function(req, res, next) {
         res.status(400).end()
         return
     }
-
     const customerUUID = userRegistrationUUID.rows[0]['customer_unique_register_id']
     const productQuery = await database.query(`SELECT product_price FROM ${database.Tables.products}
                                                    WHERE product_unique_register_id = $1;`, [itemUUID])
@@ -78,8 +81,6 @@ router.post('/changes', async function(req, res, next) {
     let updatedCart = JSON.parse(userCartQuery.rows[0].cart_content)
     let updatedCartTotalCost = Number(userCartQuery.rows[0]['cart_total_cost'])
 
-
-    console.log(updatedCart)
     switch (action) {
         case "add" :
             if(!isNaN(Math.abs(Number(quantity)))){
@@ -132,7 +133,67 @@ router.post('/changes', async function(req, res, next) {
 
 
 router.get('/view', async function(req, res, next) {
-    res.json("You reached the root page of API")
+    const sessionToken = req.query.token
+    if(!uuid.v4(sessionToken)){
+        res.status(400).end()
+        return
+    }
+    const getCustomerUUID = await database.query(`SELECT customer_unique_register_id, 
+                                                              customer_token_expiration_date 
+                                                              FROM ${database.Tables.customers} 
+                                                       WHERE customer_authentication_token = $1 
+                                                       AND customer_token_in_use = TRUE ;`, [sessionToken])
+    if(getCustomerUUID.rows.length === 0){
+        res.status(400).end()
+        return
+    }
+
+    const currentDate = new Date()
+    const isValidSessionToken = getCustomerUUID.rows[0]['customer_token_expiration_date']
+    if(isValidSessionToken < currentDate){
+        await resetSession(sessionToken)
+        res.status(400).end()
+        return
+    }
+
+    const getUserCartItems = await database.query(`SELECT cart_owner_uuid, cart_content, cart_total_cost FROM ${database.Tables.carts} 
+                                                        WHERE cart_owner_uuid = $1;`, [getCustomerUUID.rows[0]['customer_unique_register_id']])
+
+    const cartItems = JSON.parse(getUserCartItems.rows[0]['cart_content'])
+    if(cartItems.length === 0){
+        res.json({ "cart" : {}})
+    }
+
+    const params = Object.keys(cartItems).map(e => 'product_unique_register_id = '.concat(`'${e}'`)).join(' OR ')
+
+    const getProducts = await database.query(`SELECT product_unique_register_id,
+                               seller_company_name,
+                               product_price,
+                               product_quantity,
+                               product_category,
+                               product_description,
+                               product_image_data
+                               FROM ${database.Tables.products}
+                               INNER JOIN ${database.Tables.sellers} ON (product_company_owner_uuid = seller_unique_register_id)
+                               WHERE ${params} ;`)
+
+
+    const cart = {
+        "cart" : getProducts.rows.map(e => {
+            return {
+                "id" : e.product_unique_register_id,
+                "company_name" : e.seller_company_name,
+                "name" : e.product_name,
+                "price" : e.product_price,
+                "quantity" : e.product_quantity,
+                "category" : e.product_category,
+                "description" : e.product_description,
+                "image" : e.product_image_data.toString('base64'),
+            }
+        })
+    }
+
+    res.json(cart)
 })
 
 module.exports = router
