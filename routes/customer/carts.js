@@ -179,13 +179,14 @@ router.get('/view', async function(req, res, next) {
 
 
     const cart = {
+        "totalCartCost" : Number(getUserCartItems.rows[0]['cart_total_cost'].toFixed(3)),
         "cart" : getProducts.rows.map(e => {
             return {
                 "id" : e.product_unique_register_id,
                 "company_name" : e.seller_company_name,
                 "name" : e.product_name,
                 "price" : e.product_price,
-                "quantity" : e.product_quantity,
+                "quantity" : cartItems[e.product_unique_register_id],
                 "category" : e.product_category,
                 "description" : e.product_description,
                 "image" : e.product_image_data.toString('base64'),
