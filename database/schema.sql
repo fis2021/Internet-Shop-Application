@@ -73,5 +73,5 @@ CREATE  TABLE "internet-shop-application".orders (
 	order_status          char(1)  NOT NULL ,
 	order_delivery_type   char(1)  NOT NULL ,
 	order_initiate_date   timestamptz  NOT NULL ,
-	order_completion_time timestamptz  NOT NULL,
+	order_completion_time timestamptz  NOT NULL
  );
