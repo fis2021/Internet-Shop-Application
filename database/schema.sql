@@ -66,11 +66,12 @@ CREATE  TABLE "internet-shop-application".carts (
 -- table to register orders
 CREATE  TABLE "internet-shop-application".orders (
 	order_idx             BIGSERIAL PRIMARY KEY,
+	order_uuid            uuid NOT NULL,
 	order_customer_id     uuid NOT NULL,
 	order_content         text[]  NOT NULL DEFAULT '{}',
 	order_total_cost      double precision  NOT NULL ,
 	order_status          char(1)  NOT NULL ,
 	order_delivery_type   char(1)  NOT NULL ,
 	order_initiate_date   timestamptz  NOT NULL ,
-	order_completion_time timestamptz  NOT NULL
+	order_completion_time timestamptz  NOT NULL,
  );
