@@ -17,6 +17,7 @@ ALTER TABLE "internet-shop-application".sellers ADD COLUMN seller_authentication
 ALTER TABLE "internet-shop-application".sellers ADD COLUMN seller_token_creation_date timestamptz;
 ALTER TABLE "internet-shop-application".sellers ADD COLUMN seller_token_expiration_date timestamptz;
 ALTER TABLE "internet-shop-application".sellers ADD COLUMN seller_token_in_use boolean DEFAULT false;
+ALTER TABLE "internet-shop-application".sellers ADD COLUMN seller_account_balance double  precision  NOT NULL DEFAULT .0;
 
 
 --Table for registration customers related data
@@ -35,6 +36,8 @@ ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_token_crea
 ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_token_expiration_date timestamptz;
 ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_token_in_use boolean DEFAULT false;
 ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_funds real DEFAULT .0 NOT NULL;
+ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_address varchar(50);
+ALTER TABLE "internet-shop-application".customers ADD COLUMN customer_contact_phone varchar(12);
 
 
 --Table for products
