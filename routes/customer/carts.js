@@ -158,8 +158,7 @@ router.get('/view', async function(req, res, next) {
 
     const getUserCartItems = await database.query(`SELECT cart_owner_uuid, cart_content, cart_total_cost FROM ${database.Tables.carts} 
                                                         WHERE cart_owner_uuid = $1;`, [getCustomerUUID.rows[0]['customer_unique_register_id']])
-
-    const cartItems = JSON.parse(getUserCartItems.rows[0]['cart_content'])
+    const cartItems = JSON.parse(getUserCartItems.rows === 0 ? {} : getUserCartItems.rows[0]['cart_content'])
     if(cartItems.length === 0){
         res.json({ "cart" : {}})
     }
