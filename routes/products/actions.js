@@ -129,6 +129,7 @@ router.post('/changes', async function(req, res, next) {
                                  product_image_data,
                                  product_register_date,
                                  product_status)  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING true;`
+            const productUUID = uuid.v4()
             const addParams = [
                 uuid.v4(),
                 requestBody.product.name,
@@ -143,7 +144,7 @@ router.post('/changes', async function(req, res, next) {
             ]
             const addResponse = await database.query(addStmt, addParams)
             if(addResponse.rows.length > 0){
-                res.status(201).end()
+                res.json({"productID" : productUUID})
             } else {
                 res.status(500).end()
             }
