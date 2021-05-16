@@ -48,14 +48,14 @@ router.post('/', async function(req, res, next) {
     const delivery = deliveryType === 0 ? 0 : 1
 
 
-    // const resetCustomerCart = await database.query(`UPDATE ${database.Tables.carts} SET
-    //                                                      cart_content = ARRAY ['{}'],
-    //                                                      cart_total_cost = $1
-    //                                                      WHERE cart_owner_uuid = $2 RETURNING true;`, [.0, customerUUID])
-    // if(resetCustomerCart.rows.length === 0){
-    //     res.status(500).end()
-    //     return
-    // }
+    const resetCustomerCart = await database.query(`UPDATE ${database.Tables.carts} SET
+                                                         cart_content = ARRAY ['{}'],
+                                                         cart_total_cost = $1
+                                                         WHERE cart_owner_uuid = $2 RETURNING true;`, [.0, customerUUID])
+    if(resetCustomerCart.rows.length === 0){
+        res.status(500).end()
+        return
+    }
 
     const itemsUUIDs = Object.keys(parsedCart).map(e => "product_unique_register_id=".concat(`'${e}'`)).join(" OR ")
     const getSellersID = await database.query(`SELECT product_company_owner_uuid,
