@@ -77,7 +77,6 @@ router.post('/changes', async function(req, res, next) {
         }
         return
     }
-
     let updatedCart = JSON.parse(userCartQuery.rows[0].cart_content)
     let updatedCartTotalCost = Number(userCartQuery.rows[0]['cart_total_cost'])
 
@@ -158,14 +157,14 @@ router.get('/view', async function(req, res, next) {
 
     const getUserCartItems = await database.query(`SELECT cart_owner_uuid, cart_content, cart_total_cost FROM ${database.Tables.carts} 
                                                         WHERE cart_owner_uuid = $1;`, [getCustomerUUID.rows[0]['customer_unique_register_id']])
-    const cartItems = JSON.parse(getUserCartItems.rows === 0 ? {} : getUserCartItems.rows[0]['cart_content'])
-    if(cartItems.length === 0){
+    const cartItems = getUserCartItems.rows === 0 ? {} : getUserCartItems.rows[0]['cart_content']
+    if(Object.keys(cartItems).length === 0){
         res.json({ "cart" : {}})
+        return
     }
-
-    const params = Object.keys(cartItems).map(e => 'product_unique_register_id = '.concat(`'${e}'`)).join(' OR ')
-    const validParams = params.length === 0 ? " TRUE " : params
-
+    const params = Object.keys(JSON.parse(cartItems)).map(e => 'product_unique_register_id = '.concat(`'${e}'`)).join(' OR ')
+    const validParams = params.length === 0 ? 0 : params
+    console.log(params)
     const getProducts = await database.query(`SELECT product_unique_register_id,
                                seller_company_name,
                                product_price,
@@ -175,7 +174,7 @@ router.get('/view', async function(req, res, next) {
                                product_image_data
                                FROM ${database.Tables.products}
                                INNER JOIN ${database.Tables.sellers} ON (product_company_owner_uuid = seller_unique_register_id)
-                               {WHERE ${validParams} ;`)
+                               ${validParams === 0 ? " " : " WHERE ".concat(params)} ;`)
 
     const cart = {
         "totalCartCost" : Number(getUserCartItems.rows[0]['cart_total_cost'].toFixed(3)),
