@@ -46,6 +46,60 @@ router.post('/', async function(req, res, next) {
         return
     }
     const delivery = deliveryType === 0 ? 0 : 1
+
+
+    // const resetCustomerCart = await database.query(`UPDATE ${database.Tables.carts} SET
+    //                                                      cart_content = ARRAY ['{}'],
+    //                                                      cart_total_cost = $1
+    //                                                      WHERE cart_owner_uuid = $2 RETURNING true;`, [.0, customerUUID])
+    // if(resetCustomerCart.rows.length === 0){
+    //     res.status(500).end()
+    //     return
+    // }
+
+    const itemsUUIDs = Object.keys(parsedCart).map(e => "product_unique_register_id=".concat(`'${e}'`)).join(" OR ")
+    const getSellersID = await database.query(`SELECT product_company_owner_uuid,
+                                                      product_price,
+                                                      product_quantity,
+                                                      product_unique_register_id
+                                                      FROM ${database.Tables.products} WHERE ${itemsUUIDs};`)
+    const sellersItems = getSellersID.rows
+
+    const result = Object.entries(parsedCart).map(e => {
+        const priceObj = sellersItems.filter(k => k['product_unique_register_id'] === e[0])
+        const price = Number(priceObj[0]['product_price'])
+        let arr = []
+        arr[e[0]] = Number(e[1]) * Number(price)
+        return arr
+    })
+
+    const updateAmount = Object.entries(parsedCart).map(e => {
+        const quantityObj = sellersItems.filter(k => k['product_unique_register_id'] === e[0])
+        const quantity = Number(quantityObj[0]['product_quantity'])
+        let arr = []
+        arr[e[0]] = (quantity -  Number(e[1])) < 0 ? quantity : Number(e[1])
+        return arr
+    })
+
+    let updatedOrder = Object.assign({}, parsedCart)
+    const parsedArray = Object.keys(parsedCart)
+
+    for(let i = 0; i < parsedArray.length; i++){
+        let availableAmount = Number(parsedCart[parsedArray[i]]);
+        for(let j = 0; j < updateAmount.length; j++){
+            if(updateAmount[j][parsedArray[i]] !== undefined)
+                availableAmount = updateAmount[j][parsedArray[i]]
+        }
+        updatedOrder[parsedArray[i]] = Number(availableAmount - parsedCart[parsedArray[i]]) <= 0 ? availableAmount : updatedOrder[parsedArray[i]]
+    }
+    const updateObj = Object.assign(updatedOrder)
+
+    for(let i = 0; i < result.length; i++){
+        const prodAmount = Object.values(updateAmount[i])[0] - updateObj[Object.keys(result[i])[0]]
+        await database.query(`UPDATE ${database.Tables.sellers} SET seller_account_balance = $1 WHERE seller_unique_register_id = $2;`, [Object.values(result[i])[0], Object.keys(result[i])[0]])
+        await database.query(`UPDATE ${database.Tables.products} SET product_quantity = $1 WHERE product_unique_register_id = $2;`, [prodAmount, Object.keys(updateAmount[i])[0]])
+    }
+
     const createOrderStmt = `INSERT INTO ${database.Tables.orders} (
                              order_uuid,
                              order_content,
@@ -54,7 +108,7 @@ router.post('/', async function(req, res, next) {
                              order_status,
                              order_delivery_type,
                              order_initiate_date,
-                             order_completion_time) VALUES ($1, ARRAY ['${JSON.stringify(parsedCart)}'], $2, $3, $4, $5, NOW(), (current_timestamp + INTERVAL '${delivery === 1 ? fastDelivery : normalDelivery} seconds')) 
+                             order_completion_time) VALUES ($1, ARRAY ['${JSON.stringify(updateObj)}'], $2, $3, $4, $5, NOW(), (current_timestamp + INTERVAL '${delivery === 1 ? fastDelivery : normalDelivery} seconds')) 
                              RETURNING true;`
     const queryParams = [
         uuid.v4(),
@@ -68,37 +122,6 @@ router.post('/', async function(req, res, next) {
         res.status(500).end()
         return
     }
-
-    const resetCustomerCart = await database.query(`UPDATE ${database.Tables.carts} SET
-                                                         cart_content = ARRAY ['{}'],
-                                                         cart_total_cost = $1
-                                                         WHERE cart_owner_uuid = $2 RETURNING true;`, [.0, customerUUID])
-    if(resetCustomerCart.rows.length === 0){
-        res.status(500).end()
-        return
-    }
-
-    const itemsUUIDs = Object.keys(parsedCart).map(e => "product_unique_register_id=".concat(`'${e}'`)).join(" OR ")
-    const getSellersID = await database.query(`SELECT product_company_owner_uuid,
-                                                      product_price,
-                                                      product_quantity,
-                                                      product_unique_register_id
-                                                      FROM ${database.Tables.products} WHERE ${itemsUUIDs};`)
-    const sellersItems = getSellersID.rows
-    const limit = Object.keys(parsedCart).length
-
-    const result = Object.entries(parsedCart).map(e => {
-        const priceObj = sellersItems.filter(k => k['product_unique_register_id'] === e[0])
-        const price = Number(priceObj[0]['product_price'])
-        let arr = []
-        arr[e[0]] = Number(e[1]) * Number(price)
-        return arr
-    })
-
-    for(let i = 0; i < result.length; i++){
-        await database.query(`UPDATE ${database.Tables.sellers} SET seller_account_balance = $1 WHERE seller_unique_register_id = $2;`, [Object.values(result[i])[0], Object.keys(result[i])[0]])
-    }
-
     res.status(201).end()
 })
 
