@@ -7,3 +7,5 @@ Frontend - website itself
 Backend - logic behind website and databases
 
 To build an run each part of application, follow README file instructions of each branch.
+
+For testing purposes a database server can be accessed with credentials provided in Jira instance in ISP-106 task.
