@@ -17,12 +17,10 @@ If **npm** or **Nodejs** is not installed you can download executables using thi
 
 https://www.npmjs.com/get-npm
 
+If all necessary programs are installed change directory using `cd Backend` and run command:
+`npm install` - to install all necessary packages
 
-If all necessary programs are installed change diretory using `cd Backend` and run command:
-
-`npm build`
-
-`npm run`
+`npm start` - to run API into terminal. The processed logs will be displayed here.
 
 Now the API is running on specified port and in can pe used by Frontend to fully test entire application.
 
