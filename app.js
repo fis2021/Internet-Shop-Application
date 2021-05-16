@@ -13,6 +13,8 @@ const productActionRouter = require('./routes/products/actions')
 const customerFundsRouter = require('./routes/customer/funds')
 const productsViewRouter = require('./routes/products/view')
 const customerCartRouter = require('./routes/customer/carts')
+const viewOrderRouter = require('./routes/orders/view')
+const createOrderRouter = require('./routes/orders/create')
 
 const app = express();
 
@@ -45,6 +47,8 @@ app.use('/api/products/actions', productActionRouter)
 app.use('/api/customer/funds', customerFundsRouter)
 // app.use('/api/products/view', productsViewRouter)
 app.use('/api/customer/cart', customerCartRouter)
+app.use('/api/orders/view', viewOrderRouter)
+app.use('/api/orders/create', createOrderRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

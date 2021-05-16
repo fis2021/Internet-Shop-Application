@@ -11,7 +11,7 @@ async function resetSession(sessionToken) {
             customer_token_in_use = false,
             customer_token_creation_date = null,
             customer_token_expiration_date = null 
-            WHERE customer_authentication_token = $1`
+            WHERE customer_authentication_token = $1;`
         await database.query(resetStmt, [sessionToken])
     }
 }
@@ -165,6 +165,7 @@ router.get('/view', async function(req, res, next) {
     }
 
     const params = Object.keys(cartItems).map(e => 'product_unique_register_id = '.concat(`'${e}'`)).join(' OR ')
+    const validParams = params.length === 0 ? " TRUE " : params
 
     const getProducts = await database.query(`SELECT product_unique_register_id,
                                seller_company_name,
@@ -175,8 +176,7 @@ router.get('/view', async function(req, res, next) {
                                product_image_data
                                FROM ${database.Tables.products}
                                INNER JOIN ${database.Tables.sellers} ON (product_company_owner_uuid = seller_unique_register_id)
-                               WHERE ${params} ;`)
-
+                               {WHERE ${validParams} ;`)
 
     const cart = {
         "totalCartCost" : Number(getUserCartItems.rows[0]['cart_total_cost'].toFixed(3)),
